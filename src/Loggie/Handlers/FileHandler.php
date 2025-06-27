@@ -2,11 +2,14 @@
 
 namespace Loggie\Handlers;
 
+use Loggie\Utils\LoggieLevels;
+
 class FileHandler implements HandlerInterface
 {
     private string $filePath;
+    private string $minLevel = 'debug';
 
-    public function __construct(string $filePath)
+    public function __construct(string $filePath, string $minLevel = LoggieLevels::DEBUG)
     {
         $dir = dirname($filePath);
 
@@ -28,10 +31,15 @@ class FileHandler implements HandlerInterface
         }
 
         $this->filePath = $filePath;
+        $this->minLevel = $minLevel;
     }
 
     public function write(string $level, string $message): void
     {
+        if (LoggieLevels::compare($level, $this->minLevel) < 0) {
+            return;
+        }
+
         $date = date('Y-m-d H:i:s');
         $line = "[{$date}] {$level}: {$message}" . PHP_EOL;
         file_put_contents($this->filePath, $line, FILE_APPEND);

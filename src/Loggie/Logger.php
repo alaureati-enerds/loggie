@@ -8,17 +8,20 @@ use Loggie\Handlers\HandlerInterface;
 
 class Logger implements LoggerInterface
 {
-    private HandlerInterface $handler;
+    /** @var HandlerInterface[] */
+    private array $handlers = [];
 
-    public function __construct(HandlerInterface $handler)
+    public function __construct(array $handlers = [])
     {
-        $this->handler = $handler;
+        $this->handlers = $handlers;
     }
 
     public function log($level, $message, array $context = []): void
     {
         $interpolated = $this->interpolate($message, $context);
-        $this->handler->write($level, $interpolated);
+        foreach ($this->handlers as $handler) {
+            $handler->write($level, $interpolated);
+        }
     }
 
     public function emergency($message, array $context = []): void
