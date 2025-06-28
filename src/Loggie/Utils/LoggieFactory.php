@@ -49,6 +49,15 @@ class LoggieFactory
                 $handler = new FileHandler($conf['path'], $level);
                 break;
 
+            case 'database':
+                if (empty($conf['pdo']) || !$conf['pdo'] instanceof \PDO) {
+                    throw new RuntimeException("Database handler requires a valid 'pdo' instance.");
+                }
+                $table = $conf['table'] ?? 'log';
+                $channel = $conf['channel'] ?? 'default';
+                $handler = new \Loggie\Handlers\DatabaseHandler($conf['pdo'], $table, $level, $channel);
+                break;
+
             case 'null':
             default:
                 $handler = new NullHandler();

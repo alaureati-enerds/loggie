@@ -20,7 +20,7 @@ class Logger implements LoggerInterface
     {
         $interpolated = $this->interpolate($message, $context);
         foreach ($this->handlers as $handler) {
-            $handler->write($level, $interpolated);
+            $handler->write($level, $interpolated, $context);
         }
     }
 

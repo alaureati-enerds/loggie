@@ -1,10 +1,9 @@
-
-
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Loggie\Utils\LoggieFactory;
+use PDO;
 
 $config = [
     'handlers' => [
@@ -22,6 +21,14 @@ $config = [
         ],
         [
             'type' => 'null'
+        ],
+        [
+            'type' => 'database',
+            'pdo' => new PDO('mysql:host=loggie-db;port=3306;dbname=loggie;charset=utf8mb4', 'root', 'masterkey', [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]),
+            'level' => 'debug',
+            'channel' => 'factory'
         ]
     ]
 ];
