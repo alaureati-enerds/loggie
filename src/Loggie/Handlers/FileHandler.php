@@ -46,7 +46,6 @@ class FileHandler implements HandlerInterface
             return;
         }
 
-        $date = date('Y-m-d H:i:s');
         $line = $this->formatter->format($level, $message, $context);
         file_put_contents($this->filePath, $line, FILE_APPEND);
     }
