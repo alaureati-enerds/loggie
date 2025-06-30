@@ -27,6 +27,28 @@ class Logger implements LoggerInterface
     }
 
     /**
+     * Aggiunge un singolo handler al logger.
+     *
+     * @param HandlerInterface $handler
+     */
+    public function addHandler(HandlerInterface $handler): void
+    {
+        $this->handlers[] = $handler;
+    }
+
+    /**
+     * Aggiunge più handler contemporaneamente.
+     *
+     * @param HandlerInterface[] $handlers
+     */
+    public function addHandlers(array $handlers): void
+    {
+        foreach ($handlers as $handler) {
+            $this->addHandler($handler);
+        }
+    }
+
+    /**
      * Scrive un messaggio di log con un livello specificato.
      *
      * @param mixed  $level   Il livello di log (stringa conforme a PSR-3).
