@@ -6,12 +6,24 @@ use Loggie\Utils\LoggieLevels;
 use Loggie\Formatters\FormatterInterface;
 use Loggie\Formatters\LineFormatter;
 
+/**
+ * Handler che scrive i log su file.
+ *
+ * Verifica la presenza e i permessi della directory/file in fase di costruzione.
+ * Supporta la definizione di un livello minimo e l'utilizzo di formatter personalizzati.
+ */
 class FileHandler implements HandlerInterface
 {
     private string $filePath;
     private string $minLevel = 'debug';
     private FormatterInterface $formatter;
 
+    /**
+     * @param string $filePath Percorso completo del file su cui scrivere i log.
+     * @param string $minLevel Livello minimo da loggare (default: 'debug').
+     *
+     * @throws \RuntimeException Se il file o la directory non sono scrivibili o non possono essere creati.
+     */
     public function __construct(string $filePath, string $minLevel = LoggieLevels::DEBUG)
     {
         $dir = dirname($filePath);
@@ -35,11 +47,23 @@ class FileHandler implements HandlerInterface
         $this->formatter = new LineFormatter();
     }
 
+    /**
+     * Imposta un formatter per formattare i messaggi prima della scrittura.
+     *
+     * @param FormatterInterface $formatter Il formatter da utilizzare.
+     */
     public function setFormatter(FormatterInterface $formatter): void
     {
         $this->formatter = $formatter;
     }
 
+    /**
+     * Scrive un messaggio di log nel file, se il livello è sufficiente.
+     *
+     * @param string $level   Livello del messaggio di log.
+     * @param string $message Messaggio da scrivere.
+     * @param array  $context Contesto associato (opzionale).
+     */
     public function write(string $level, string $message, array $context = []): void
     {
         if (LoggieLevels::compare($level, $this->minLevel) < 0) {
