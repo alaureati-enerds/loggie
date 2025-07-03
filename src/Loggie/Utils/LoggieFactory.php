@@ -7,6 +7,8 @@ use Loggie\Handlers\ConsoleHandler;
 use Loggie\Handlers\FileHandler;
 use Loggie\Handlers\NullHandler;
 use Loggie\Handlers\HandlerInterface;
+use Loggie\Handlers\TelegramHandler;
+use Loggie\Handlers\EmailHandler;
 use Loggie\Formatters\LineFormatter;
 use Loggie\Formatters\InterpolatedFormatter;
 use RuntimeException;
@@ -56,6 +58,37 @@ class LoggieFactory
                 $table = $conf['table'] ?? 'log';
                 $channel = $conf['channel'] ?? 'default';
                 $handler = new \Loggie\Handlers\DatabaseHandler($conf['pdo'], $table, $level, $channel);
+                break;
+
+            case 'telegram':
+                if (empty($conf['token']) || empty($conf['chat_id'])) {
+                    throw new RuntimeException("Telegram handler requires 'token' and 'chat_id'.");
+                }
+                $handler = new TelegramHandler($conf['token'], $conf['chat_id'], $level);
+                break;
+
+            case 'email':
+                foreach (['mailer', 'to', 'from', 'subject'] as $key) {
+                    if (empty($conf[$key])) {
+                        throw new RuntimeException("Email handler requires '{$key}' in configuration.");
+                    }
+                }
+
+                $mailer = $conf['mailer'];
+                if (!$mailer instanceof \PHPMailer\PHPMailer\PHPMailer) {
+                    throw new RuntimeException("The 'mailer' parameter must be an instance of PHPMailer.");
+                }
+
+                $handler = new EmailHandler(
+                    $mailer,
+                    $conf['to'],
+                    $conf['from'],
+                    $conf['subject'],
+                    $level,
+                    $conf['from_name'] ?? null,
+                    $conf['cc'] ?? [],
+                    $conf['bcc'] ?? []
+                );
                 break;
 
             case 'null':
