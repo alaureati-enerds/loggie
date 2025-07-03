@@ -29,7 +29,7 @@ class InterpolatedFormatter implements FormatterInterface
             $interpolated = str_replace("{{$key}}", (string)$value, $interpolated);
         }
 
-        $date = date('Y-m-d H:i:s');
+        $date = date('d/m/Y H:i:s');
         return "[{$date}] " . strtoupper($level) . ": {$interpolated}" . PHP_EOL;
     }
 }
