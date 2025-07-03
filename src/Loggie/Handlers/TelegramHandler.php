@@ -9,6 +9,14 @@ use RuntimeException;
 
 /**
  * Handler che invia i log come messaggi Telegram tramite Bot API.
+ *
+ * Questo handler utilizza un bot Telegram per inviare messaggi a una chat o canale.
+ * Supporta l'utilizzo di un formatter compatibile con Markdown per il messaggio.
+ *
+ * Caratteristiche:
+ * - Livello minimo di log configurabile
+ * - Supporta il parse_mode Markdown (versione 1)
+ * - Invia direttamente tramite cURL alla Telegram API
  */
 class TelegramHandler implements HandlerInterface
 {
@@ -31,6 +39,15 @@ class TelegramHandler implements HandlerInterface
         $this->formatter = $formatter;
     }
 
+    /**
+     * Invia un messaggio alla chat Telegram se il livello è sufficiente.
+     *
+     * @param string $level   Livello del log (es. 'error', 'warning')
+     * @param string $message Messaggio principale
+     * @param array $context  Dati contestuali da includere nel log
+     *
+     * @throws RuntimeException Se la richiesta Telegram fallisce o restituisce errore
+     */
     public function write(string $level, string $message, array $context = []): void
     {
         if (LoggieLevels::compare($level, $this->minLevel) < 0) {
@@ -67,11 +84,21 @@ class TelegramHandler implements HandlerInterface
         }
     }
 
+    /**
+     * Imposta un formatter da utilizzare per i messaggi log.
+     *
+     * @param FormatterInterface|null $formatter Formatter personalizzato
+     */
     public function setFormatter(?FormatterInterface $formatter): void
     {
         $this->formatter = $formatter;
     }
 
+    /**
+     * Restituisce il formatter attualmente utilizzato.
+     *
+     * @return FormatterInterface|null
+     */
     public function getFormatter(): ?FormatterInterface
     {
         return $this->formatter;
